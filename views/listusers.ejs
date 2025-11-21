@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registered Users</title>
+</head>
+<body>
+    <h1>Registered Users</h1>
+    <ul>
+        <% users.forEach(function(user) { %>
+            <li><%= user.username %> - <%= user.first_name %> <%= user.last_name %> (<%= user.email %>)</li>
+        <% }); %>
+    </ul>
+</body>
+</html>

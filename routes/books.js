@@ -1,20 +1,6 @@
 // Create a new router
 const express = require("express")
 const router = express.Router()
-var mysql = require('mysql2');
-
-
-// Define the database connection pool
-const db = mysql.createPool({
-    host: 'localhost',
-    user: 'berties_books_app',
-    password: 'qwertyuiop',
-    database: 'berties_books',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-});
-global.db = db;
 
 router.get('/search',function(req, res, next){
     res.render("search.ejs")
@@ -32,7 +18,7 @@ router.get('/list', function(req, res, next) {
         if (err) {
             next(err)
         }
-        res.render("list.ejs", {availableBooks:result})
+        res.render("list.ejs", {books:result})
         // res.render("list.ejs", {data: berties_books_app})
     });
 });
