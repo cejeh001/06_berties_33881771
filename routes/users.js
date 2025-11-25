@@ -21,7 +21,7 @@ router.get('/register', function (req, res, next) {
 //     res.send(' Hello '+ req.body.first + ' '+ req.body.last +' you are now registered!  We will send an email to you at ' + req.body.email);                                                                              
 // }); 
 
-router.get('users/list', function(req, res, next) {
+router.get('/list', function(req, res, next) {
     let sqlquery = "SELECT username, first_name, last_name, email FROM users"; // Don't select passwords!
     
     db.query(sqlquery, (err, result) => {
@@ -35,6 +35,7 @@ router.get('users/list', function(req, res, next) {
 
 router.post('/registered', function (req, res, next) {
     const plainPassword = req.body.password;
+    const saltRounds = 10;
     
     // Hash the password before storing
     bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
