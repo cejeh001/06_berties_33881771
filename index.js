@@ -33,7 +33,7 @@ const db = mysql.createPool({
     queueLimit: 0,
 });
 
-globalThis.db = db;
+global.db = db;
 
 // Load the route handlers
 const mainRoutes = require("./routes/main")
