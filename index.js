@@ -4,6 +4,8 @@ var ejs = require('ejs')
 const path = require('path')
 var mysql = require('mysql2');
 var env = require('dotenv').config(); 
+// session management module
+var session = require ('express-session')
 
 // Create the express application object
 const app = express()
@@ -21,6 +23,16 @@ app.use(express.static(path.join(__dirname, 'public')))
 // Define our application-specific data
 app.locals.shopData = {shopName: "Bertie's Books"}
 
+// create a session
+app.use(session({
+    secret: 'somerandomstuff',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 600000
+    }
+}))
+
 
 // Define the database connection pool
 const db = mysql.createPool({
@@ -34,6 +46,10 @@ const db = mysql.createPool({
 });
 
 global.db = db;
+
+
+
+
 
 // Load the route handlers
 const mainRoutes = require("./routes/main")

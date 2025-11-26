@@ -2,6 +2,15 @@
 const express = require("express")
 const router = express.Router()
 
+// const redirectLogin = (req, res, next) => {
+//     if (!req.session.userId ) {
+//       res.redirect('./login') // redirect to the login page
+//     } else { 
+//         next (); // move to the next middleware function
+//     } 
+// }
+
+
 router.get('/search',function(req, res, next){
     res.render("search.ejs")
 });
@@ -23,7 +32,7 @@ router.get('/list', function(req, res, next) {
     });
 });
 
-router.get('/addbook',function(req, res, next){
+router.get('/addbook', function(req, res, next){
     res.render('addbook.ejs')
 });
 
