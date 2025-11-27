@@ -6,6 +6,7 @@ var mysql = require('mysql2');
 var env = require('dotenv').config(); 
 // session management module
 var session = require ('express-session')
+const expressSanitizer = require('express-sanitizer');
 
 // Create the express application object
 const app = express()
@@ -33,6 +34,7 @@ app.use(session({
     }
 }))
 
+app.use(expressSanitizer());
 
 // Define the database connection pool
 const db = mysql.createPool({

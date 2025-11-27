@@ -2,7 +2,7 @@
 const express = require("express")
 const router = express.Router()
 const bcrypt = require('bcrypt')
-
+const { check, validationResult } = require('express-validator');
 
 const redirectLogin = (req, res, next) => {
     if (!req.session.userId ) {
@@ -18,6 +18,7 @@ router.get('/register', function (req, res, next) {
 })
 
 
+
 router.get('/list', redirectLogin, function(req, res, next) {
     let sqlquery = "SELECT username, first_name, last_name, email FROM users"; // Don't select passwords!
     
@@ -30,33 +31,83 @@ router.get('/list', redirectLogin, function(req, res, next) {
     });
 });
 
-router.post('/registered', function (req, res, next) {
-    const plainPassword = req.body.password;
-    const saltRounds = 10;
+
+
+router.post('/registered', [
+                            check('first name')
+                                .isString(),
+                            check('last name')
+                                .isString(),
+                            check('email')
+                                .isEmail(), 
+                            check('username')
+                                .isLength({ min: 5, max: 20}),
+                            check('password')
+                                .isLength({min: 8})
+                                .withMessage('must be at least 8 chars long')
+                    ], function (req, res, next) {
     
-    // Hash the password before storing
-    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
-        if (err) {
-            next(err);
-            return;
-        }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.render('./register')
+    }
+    else { 
+
+        const plainPassword = req.body.password;
+        const saltRounds = 10;
         
-        // Store hashed password in database
-        let sqlquery = "INSERT INTO users (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)";
-        let newrecord = [req.body.username, req.body.first, req.body.last, req.body.email, hashedPassword];
-        
-        db.query(sqlquery, newrecord, (err, result) => {
+        // Hash the password before storing
+        bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
             if (err) {
                 next(err);
-            } else {
-                // Debug output (remove in production!)
-                let response = 'Hello '+ req.body.first + ' '+ req.body.last +' you are now registered! We will send an email to you at ' + req.body.email;
-                response += ' Your password is: '+ req.body.password +' and your hashed password is: '+ hashedPassword;
-                res.send(response);
+                return;
             }
+            
+            // Store hashed password in database
+            let sqlquery = "INSERT INTO users (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)";
+            let newrecord = [req.body.username, req.sanitize(req.body.first), req.body.last, req.body.email, hashedPassword];
+            
+            db.query(sqlquery, newrecord, (err, result) => {
+                if (err) {
+                    next(err);
+                } else {
+                    // Debug output (remove in production!)
+                    let response = 'Hello '+ req.body.first + ' '+ req.body.last +' you are now registered! We will send an email to you at ' + req.body.email;
+                    response += ' Your password is: '+ req.body.password +' and your hashed password is: '+ hashedPassword;
+                    res.send(response);
+                }
+            });
         });
-    });
+    }  
 });
+
+// router.post('/registered', function (req, res, next) {
+//     const plainPassword = req.body.password;
+//     const saltRounds = 10;
+    
+//     // Hash the password before storing
+//     bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+//         if (err) {
+//             next(err);
+//             return;
+//         }
+        
+//         // Store hashed password in database
+//         let sqlquery = "INSERT INTO users (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)";
+//         let newrecord = [req.body.username, req.body.first, req.body.last, req.body.email, hashedPassword];
+        
+//         db.query(sqlquery, newrecord, (err, result) => {
+//             if (err) {
+//                 next(err);
+//             } else {
+//                 // Debug output (remove in production!)
+//                 let response = 'Hello '+ req.body.first + ' '+ req.body.last +' you are now registered! We will send an email to you at ' + req.body.email;
+//                 response += ' Your password is: '+ req.body.password +' and your hashed password is: '+ hashedPassword;
+//                 res.send(response);
+//             }
+//         });
+//     });
+// });
 
 
 // Display login form
