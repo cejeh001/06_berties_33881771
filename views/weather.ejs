@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <title>Weather Checker</title>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+
+<body>
+
+<h1>Check Weather</h1>
+
+<form action="/weather" method="GET">
+    <input type="text" name="city" placeholder="Enter city name">
+    <button type="submit">Get Weather</button>
+</form>
+
+<hr>
+
+<% if (error) { %>
+    <p style="color:red;"><%= error %></p>
+<% } else if (weatherData) { %>
+    <h2>Weather Information for <%= weatherData.city %></h2>
+    <p>Temperature: <%= weatherData.temperature %>°C</p>
+    <p>Condition: <%= weatherData.condition %></p>
+    <p>Humidity: <%= weatherData.humidity %>%</p>
+<% } %>
+
+<p><a href="/">Back to Home</a></p>
+
+</body>
+</html>
